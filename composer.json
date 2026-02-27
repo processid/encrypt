@@ -2,7 +2,8 @@
     "name": "processid/encrypt",
     "description": "Encryption / decryption with OpenSSL",
     "require": {
-        "php": "^5.4 | ^8.0"
+        "php": "^8.0",
+        "ext-openssl": "*"
     },
     "autoload": {
         "psr-4": {
