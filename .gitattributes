@@ -1,0 +1,15 @@
+# Les sources sont historiquement en CRLF : on desactive toute normalisation
+# afin que git ne reecrive pas les fichiers existants.
+*.php -text
+*.md -text
+
+# Documents internes : hors archive de distribution.
+/.gitattributes export-ignore
+/.gitignore export-ignore
+/fix_php83_functions_deprecated/ export-ignore
+
+# tests/ reste livre dans le dist (choix historique, a revoir). La justification
+# precedemment inscrite ici -- "le script `composer test` y fait reference et
+# casserait sinon chez les consommateurs" -- est fausse : Composer n'execute
+# jamais les scripts d'une dependance, uniquement ceux du package racine.
+# `/tests/ export-ignore` serait donc sans effet de bord.

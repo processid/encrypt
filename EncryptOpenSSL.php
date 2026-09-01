@@ -62,8 +62,20 @@
             return $this->_method;
         }
         
+        /**
+         * Chiffre $data et retourne le blob base64(iv . hmac_sha512 . ciphertext).
+         * Le parametre reste volontairement non type afin de preserver la
+         * compatibilite ascendante avec les appelants en declare(strict_types=1)
+         * qui transmettent des scalaires (entiers, flottants, booleens).
+         *
+         * @param string|int|float|bool|null $data
+         */
         function encrypt_string($data): string
         {
+            // null etait auparavant transmis tel quel a openssl_encrypt(), ce qui
+            // declenche une deprecation depuis PHP 8.1. Le resultat est inchange.
+            $data ??= '';
+            
             $key_aes256 = base64_decode($this->key_aes256());
             $key_hash512 = base64_decode($this->key_hash512());
             
@@ -78,6 +90,9 @@
             return $output;
         }
         
+        /**
+         * @param string|int|float|bool|null $data
+         */
         function decrypt_string($data): string|false
         {
             if (empty($data)) {

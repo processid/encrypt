@@ -3,9 +3,8 @@
     // -------------------
     // -- Instanciation --
     // -------------------
-    // $obj = new EncryptFileOpenSSL($key_aes256, $key_hash512, $method);
-    // $key_aes256 = <key aes256>
-    // $key_hash512 = <key hash512>
+    // $obj = new EncryptFileOpenSSL($password, $method);
+    // $password = <mot de passe>
     // $method = <'aes-128-cbc' | 'aes-256-cbc' | ...>
     
     namespace processid\encrypt;
@@ -15,7 +14,7 @@
         private string $_password;
         private string $_method;
         
-        static $FILE_ENCRYPTION_BLOCKS = 10000;
+        public static $FILE_ENCRYPTION_BLOCKS = 10000;
         
         public function __construct(string $password, string $method)
         {
@@ -23,12 +22,14 @@
             $this->SetMethod($method);
         }
         
+        /** @param string|int|float|bool $password */
         public function SetPassword($password): EncryptFileOpenSSL
         {
             $this->_password = $password;
             return $this;
         }
         
+        /** @param string|int|float|bool $method */
         public function SetMethod($method): EncryptFileOpenSSL
         {
             $this->_method = $method;
@@ -45,8 +46,17 @@
             return $this->_method;
         }
         
+        /**
+         * @param string|null $file_in
+         * @param string|null $file_out
+         */
         function encrypt_file($file_in, $file_out): bool
         {
+            // Evite la deprecation "Passing null to parameter of type string"
+            // de fopen() ; fopen('') leve la meme ValueError qu'auparavant.
+            $file_in ??= '';
+            $file_out ??= '';
+            
             $iv_length = openssl_cipher_iv_length($this->method());
             $key = substr(sha1($this->password(), true), 0, 16);
             $iv = openssl_random_pseudo_bytes($iv_length);
@@ -75,8 +85,15 @@
             return !$error;
         }
         
+        /**
+         * @param string|null $file_in
+         * @param string|null $file_out
+         */
         function decrypt_file($file_in, $file_out): bool
         {
+            $file_in ??= '';
+            $file_out ??= '';
+            
             $iv_length = openssl_cipher_iv_length($this->method());
             $key = substr(sha1($this->password(), true), 0, 16);
             
